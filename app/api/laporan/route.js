@@ -5,7 +5,7 @@ import { getUserFromRequest } from "@/lib/getUser";
 export async function GET(req) {
   try {
     await connectDB();
-    const user = await getUserFromRequest();
+    const user = await getUserFromRequest(req);
 
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });

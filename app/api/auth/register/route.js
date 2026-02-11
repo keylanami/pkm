@@ -2,9 +2,8 @@ import connectDB from "@/lib/mongodb";
 import Users from "@/models/Users";
 import bcrypt from "bcryptjs";
 import { signToken } from "@/lib/auth";
-import { getUserFromRequest } from "@/lib/getUser";
 
-export async function GET(req) {
+export async function POST(req) {
     try {
         await connectDB();
 
@@ -26,10 +25,10 @@ export async function GET(req) {
         const hashedPw = await bcrypt.hash(password, 10);
 
         const user = await Users.create({
-            username, email, password, phone_number
+            username, email, password: hashedPw, phone_number
         });
 
-        const token = signToken({ id_user: Users._id});
+        const token = signToken({ id_user: user._id});
 
         return new Response(
             JSON.stringify({message: "Registered successfully!"}),

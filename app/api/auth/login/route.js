@@ -1,5 +1,5 @@
 import connectDB from "@/lib/mongodb";
-import User from "@/models/User";
+import Users from "@/models/Users";
 import bcrypt from "bcryptjs";
 import { signToken } from "@/lib/auth";
 
@@ -8,7 +8,7 @@ export async function POST(req) {
     await connectDB();
     const { email, password } = await req.json();
 
-    const user = await User.findOne({ email });
+    const user = await Users.findOne({ email });
     if (!user) {
       return Response.json({ error: "User not found" }, { status: 404 });
     }

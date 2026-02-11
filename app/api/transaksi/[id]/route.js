@@ -6,12 +6,12 @@ export async function PUT(req, {params}) {
     try {
         await connectDB();
 
-        const user = await getUserFromRequest();
+        const user = await getUserFromRequest(req);
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
     const body = await req.json();
 
     const transaksi = await Transaksi.findOneAndUpdate(
@@ -44,12 +44,12 @@ export async function DELETE(req, {params}) {
     try {
         await connectDB();
 
-        const user = getUserFromRequest();
+        const user = await getUserFromRequest(req);
         if(!user) {
             return Response.json({error: "Unauthorized"}, {status: 401})
         }
 
-        const { id} = params;
+        const { id} = await params;
 
         const deleted = await Transaksi.findOneAndDelete(
             { _id: id, id_user: user.id_user}

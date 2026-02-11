@@ -6,7 +6,7 @@ export async function GET(req) {
     try {
         await connectDB();
 
-        const userToken = await getUserFromRequest();
+        const userToken = await getUserFromRequest(req);
         if(!userToken){
             return Response.json({error: "Unauthorized"}, {status: 401})
         }

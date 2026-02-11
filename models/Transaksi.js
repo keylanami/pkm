@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const transaksi = new mongoose.Schema(
+const TransaksiSchema = new mongoose.Schema(
     {
         id_user: {
             type: mongoose.Schema.Types.ObjectId,
@@ -39,5 +39,6 @@ const transaksi = new mongoose.Schema(
     }
 )
 
-export default mongoose.models.TransaksiScheme || 
-    mongoose.model("Transaksi", transaksi);
+const Transaksi = mongoose.models.Transaksi || mongoose.model("Transaksi", TransaksiSchema);
+
+export default Transaksi;

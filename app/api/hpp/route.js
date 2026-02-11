@@ -7,7 +7,7 @@ export async function POST(req) {
   try {
     await connectDB();
 
-    const user = await getUserFromRequest();
+    const user = await getUserFromRequest(req);
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -32,7 +32,7 @@ export async function GET(req) {
   try {
     await connectDB();
 
-    const user = await getUserFromRequest();
+    const user = await getUserFromRequest(req);
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -40,15 +40,14 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const periode = searchParams.get("periode");
 
-    const query = {
-      id_user: user.id_user,
-    };
-
-    if (periode) {
-      query.periode = periode;
+     if (!periode) {
+      return Response.json(
+        { error: "Periode wajib diisi" },
+        { status: 400 }
+      );
     }
 
-    const data = await getHPPbyPeriode(query, periode);
+    const data = await getHPPbyPeriode(user.id_user, periode);
     return Response.json(data);
   } catch (err) {
     return Response.json({ error: err.message }, { status: 500 });

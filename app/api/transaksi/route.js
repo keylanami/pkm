@@ -7,7 +7,7 @@ export async function GET(req) {
   try {
     await connectDB();
 
-    const user = await getUserFromRequest();
+    const user = await getUserFromRequest(req);
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -32,7 +32,7 @@ export async function GET(req) {
 export async function POST(req) {
   try {
     await connectDB();
-    const user = await getUserFromRequest();
+    const user = await getUserFromRequest(req);
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
