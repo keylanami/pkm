@@ -1,10 +1,19 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import Sidebar from "../Sidebar/page";
 
 export default function MainLayout({ children }) {
+  const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  const noSidebarRoutes = ["/auth/login", "/auth/register", "/pages/pengaturan"];
+
+  if (noSidebarRoutes.includes(pathname)) {
+    return <>{children}</>;
+  }
+
 
   useEffect(() => {
     const savedState = localStorage.getItem("sidebarOpen");

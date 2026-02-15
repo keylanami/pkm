@@ -23,8 +23,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     { name: "Dashboard", href: "/", icon: <HomeIcon className="w-5 h-5" /> },
     { name: "HPP", href: "/pages/hpp", icon: <CalculatorIcon className="w-5 h-5" /> },
     { name: "Transaksi", href: "/pages/transaksi", icon: <BanknotesIcon className="w-5 h-5" /> },
-    // { name: "Penjualan", href: "/penjualan", icon: <ChartBarIcon className="w-5 h-5" /> },
-    // { name: "Laporan", href: "/laporan", icon: <DocumentTextIcon className="w-5 h-5" /> },
+    { name: "Penjualan", href: "/pages/penjualan", icon: <ChartBarIcon className="w-5 h-5" /> },
+    { name: "Laporan", href: "/pages/laporan", icon: <DocumentTextIcon className="w-5 h-5" /> },
   ];
 
   return (
@@ -61,7 +61,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
         <nav className="flex-1 py-6 px-3 space-y-2 overflow-y-auto">
           <p className={`px-3 text-xs font-semibold text-white/40 uppercase mb-2 transition-all ${!isOpen && "md:hidden"}`}>
-            Menu Utama
+            Menu
           </p>
           
           {menuItems.map((item) => {
@@ -90,7 +90,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
         <div className="p-4 border-t border-white/10 space-y-2">
           <Link
-            href="/pengaturan"
+            href="/pages/pengaturan"
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all"
           >
             <Cog6ToothIcon className="w-5 h-5" />
