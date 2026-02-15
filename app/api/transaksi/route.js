@@ -45,6 +45,7 @@ export async function POST(req) {
     const data = await Transaksi.create({
       ...body,
       id_user: user.id_user,
+      detail_items: body.detail_items || []
     });
 
     return Response.json(data, { status: 201 });
