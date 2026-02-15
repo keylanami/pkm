@@ -28,3 +28,21 @@ export async function createHPP(payload) {
 
   return res.json();
 }
+
+export async function updateHPP(id, payload) {
+  const res = await fetch(`/api/hpp/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error("Gagal update HPP");
+  return res.json();
+}
+
+export async function deleteHPP(id) {
+  const res = await fetch(`/api/hpp/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Gagal hapus HPP");
+  return res.json();
+}

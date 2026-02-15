@@ -6,6 +6,12 @@ const HPPscheme = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
+
+    nama_produk: {
+      type: String,
+      required: true
+    },
+
     periode: {
       type: String,
       required: true,
@@ -15,31 +21,28 @@ const HPPscheme = new mongoose.Schema(
       required: true,
     },
     jenis_produksi: {
-      type: String, // "Unit", "Pcs", "Porsi"
+      type: String, 
+      enum: ["Unit", "Pcs", "Porsi"],
       required: true, 
     },
 
-    // --- PERUBAHAN UTAMA DI SINI ---
-    
-    // 1. Array untuk Bahan Baku
     list_bahan_baku: [
       {
-        nama: { type: String, required: true }, // contoh: "Tepung Terigu"
-        harga: { type: Number, required: true }, // contoh: 30000
+        nama: { type: String, required: true }, 
+        harga: { type: Number, required: true },
       },
     ],
-    // Simpan totalnya juga agar query lebih cepat nanti
+
     total_biaya_bahan_baku: {
       type: Number,
       required: true,
       default: 0
     },
 
-    // 2. Array untuk Tenaga Kerja
     list_tenaga_kerja: [
       {
-        keterangan: { type: String, required: true }, // contoh: "Karyawan Dapur"
-        biaya: { type: Number, required: true },      // contoh: 3000000
+        keterangan: { type: String, required: true },
+        biaya: { type: Number, required: true },      
       },
     ],
     total_biaya_tenaga_kerja: {

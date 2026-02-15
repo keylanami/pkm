@@ -4,6 +4,7 @@ export const createHPP = async (payload) => {
   const {
     id_user,
     periode,
+    nama_produk,
     jumlah_produksi,
     jenis_produksi, 
     list_bahan_baku,
@@ -25,6 +26,7 @@ export const createHPP = async (payload) => {
   return HPP.create({
     id_user,
     periode,
+    nama_produk,
     jumlah_produksi,
     jenis_produksi,
     
@@ -45,6 +47,8 @@ export const createHPP = async (payload) => {
   });
 };
 
+
+
 export const getHPPbyPeriode = async (id_user, periode) => {
-  return HPP.findOne({ id_user, periode });
+  return HPP.find({ id_user, periode }).sort({ createdAt: -1 });
 };
