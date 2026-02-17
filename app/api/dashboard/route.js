@@ -10,28 +10,56 @@ export async function GET(req) {
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
     const { searchParams } = new URL(req.url);
-    const periode = searchParams.get("periode");
+    const periode = searchParams.get("periode"); 
 
     if (!periode) return Response.json({ error: "Periode required" }, { status: 400 });
 
+    const [year, month] = periode.split("-").map(Number);
+    const prevDate = new Date(year, month - 2); 
+    const prevYear = prevDate.getFullYear();
+    const prevMonth = String(prevDate.getMonth() + 1).padStart(2, '0');
+    const prevPeriode = `${prevYear}-${prevMonth}`;
+
     const transactions = await Transaksi.find({
       id_user: user.id_user,
-      periode: periode,
+      periode: { $in: [periode, prevPeriode] }, 
     }).lean(); 
 
-    const totalPenjualan = transactions
-      .filter((t) => t.jenis === "pemasukan" && t.kategori === "penjualan")
+    const currentTrans = transactions.filter(t => t.periode === periode);
+    const prevTrans = transactions.filter(t => t.periode === prevPeriode);
+
+    const totalPenjualan = currentTrans
+      .filter((t) => t.jenis === "pemasukan")
       .reduce((acc, curr) => acc + (curr.nominal || 0), 0);
 
-    const totalPengeluaran = transactions
+    const totalPengeluaran = currentTrans
       .filter((t) => t.jenis === "pengeluaran")
       .reduce((acc, curr) => acc + (curr.nominal || 0), 0);
 
     const labaBersih = totalPenjualan - totalPengeluaran;
 
+    const prevTotalPenjualan = prevTrans
+      .filter((t) => t.jenis === "pemasukan")
+      .reduce((acc, curr) => acc + (curr.nominal || 0), 0);
+
+    const prevTotalPengeluaran = prevTrans
+      .filter((t) => t.jenis === "pengeluaran")
+      .reduce((acc, curr) => acc + (curr.nominal || 0), 0);
+
+    const prevLabaBersih = prevTotalPenjualan - prevTotalPengeluaran;
+
+    const calculateTrend = (current, previous) => {
+        if (previous === 0) return current > 0 ? 100 : 0; 
+        return ((current - previous) / previous) * 100;
+    };
+
+    const trendPenjualan = calculateTrend(totalPenjualan, prevTotalPenjualan);
+    const trendPengeluaran = calculateTrend(totalPengeluaran, prevTotalPengeluaran);
+    const trendLaba = calculateTrend(labaBersih, prevLabaBersih);
+
     const chartDataMap = {};
     
-    transactions.forEach((t) => {
+    currentTrans.forEach((t) => {
       if (t.jenis === "pemasukan" && t.kategori === "penjualan") {
         const dateObj = new Date(t.tanggal);
         const day = dateObj.getDate(); 
@@ -55,7 +83,7 @@ export async function GET(req) {
       lainnya: 0
     };
 
-    transactions.forEach((t) => {
+    currentTrans.forEach((t) => {
       if (t.jenis === "pengeluaran") {
         const cat = expenseMap[t.kategori] !== undefined ? t.kategori : 'lainnya';
         expenseMap[cat] += (t.nominal || 0);
@@ -67,13 +95,12 @@ export async function GET(req) {
         name: key.replace("_", " ").toUpperCase(), 
         value: expenseMap[key]
       }))
-      .filter(item => item.value > 0)
+      .filter(item => item.value > 0);
 
     const productSalesMap = {}; 
 
-    transactions.forEach((t) => {
+    currentTrans.forEach((t) => {
       if (t.jenis === "pemasukan" && t.kategori === "penjualan") {
-        
         if (Array.isArray(t.detail_items) && t.detail_items.length > 0) {
             t.detail_items.forEach((item) => {
                 if (item.nama_produk) {
@@ -86,9 +113,7 @@ export async function GET(req) {
                     productSalesMap[nama].omzet += Number(nilaiJual);
                 }
             });
-        } 
-
-        else if (t.keterangan) {
+        } else if (t.keterangan) {
             const nama = t.keterangan;
             if (!productSalesMap[nama]) {
                 productSalesMap[nama] = { nama: nama, qty: 0, omzet: 0 };
@@ -104,7 +129,6 @@ export async function GET(req) {
       .slice(0, 5);
 
     const reminders = await Reminder.find({ id_user: user.id_user }).lean();
-    
     const todayDate = new Date().getDate(); 
     
     const sortedReminders = reminders.sort((a, b) => {
@@ -118,6 +142,11 @@ export async function GET(req) {
         totalPenjualan,
         totalPengeluaran,
         labaBersih,
+        trends: {
+            penjualan: trendPenjualan.toFixed(1),
+            pengeluaran: trendPengeluaran.toFixed(1),
+            laba: trendLaba.toFixed(1)
+        }
       },
       chartData,
       expenseChartData,
