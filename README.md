@@ -1,6 +1,6 @@
 # 🚀 Sistem Manajemen Keuangan & HPP UMKM (PKM-KC)
 
-![Next.js](https://img.shields.io/badge/Next.js-14-black) ![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green) ![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-blue) ![Vercel](https://img.shields.io/badge/Deploy-Vercel-black)
+![Next.js](https://img.shields.io/badge/Next.js-16.1-black) ![React](https://img.shields.io/badge/React-19-blue) ![Mongoose](https://img.shields.io/badge/Mongoose-9.1-880000) ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.0-38B2AC)
 
 Aplikasi berbasis web **Fullstack** yang dirancang untuk membantu UMKM dalam mencatat transaksi keuangan, menghitung Harga Pokok Penjualan (HPP) secara otomatis, memantau laba/rugi melalui dashboard interaktif, dan mengelola pengingat tagihan.
 
@@ -39,14 +39,14 @@ Dibuat sebagai bagian dari **Program Kreativitas Mahasiswa - Karsa Cipta (PKM-KC
 
 ## 🛠️ Teknologi yang Digunakan
 
-* **Frontend**: [Next.js 14 (App Router)](https://nextjs.org/)
-* **Backend**: Next.js API Routes (Serverless Functions)
-* **Database**: [MongoDB Atlas](https://www.mongodb.com/) (NoSQL)
-* **ODM**: [Mongoose](https://mongoosejs.com/)
-* **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-* **HTTP Client**: [Axios](https://axios-http.com/)
-* **Charts**: [Recharts](https://recharts.org/)
-* **Icons**: [Heroicons](https://heroicons.com/)
+* **Core Framework**: [Next.js 16.1.6](https://nextjs.org/) (App Router)
+* **UI Library**: [React 19.2.3](https://react.dev/)
+* **Database**: [MongoDB](https://www.mongodb.com/) via [Mongoose 9.1.5](https://mongoosejs.com/)
+* **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) (`@tailwindcss/postcss`)
+* **HTTP Client**: [Axios 1.13.5](https://axios-http.com/)
+* **Charts**: [Recharts 3.7.0](https://recharts.org/)
+* **Icons**: [Heroicons 2.2.0](https://heroicons.com/)
+* **Auth**: JWT & Bcryptjs
 
 ---
 
