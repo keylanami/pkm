@@ -3,7 +3,6 @@ import HPP from "@/models/HPP";
 import Produk from "@/models/Produk";
 import { getUserFromRequest } from "@/lib/getUser";
 
-
 export async function DELETE(req, { params }) {
   try {
     await connectDB();
@@ -11,10 +10,20 @@ export async function DELETE(req, { params }) {
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
     const { id } = await params;
+    const hppToDelete = await HPP.findOne({ _id: id, id_user: user.id_user });
 
-    await HPP.findOneAndDelete({ _id: id, id_user: user.id_user });
+    if (!hppToDelete) {
+      return Response.json({ error: "Data HPP tidak ditemukan" }, { status: 404 });
+    }
 
-    return Response.json({ message: "HPP deleted successfully" });
+    await Produk.findOneAndDelete({ 
+        id_user: user.id_user, 
+        nama_produk: hppToDelete.nama_produk 
+    });
+
+    await HPP.findByIdAndDelete(id);
+
+    return Response.json({ message: "HPP dan Master Produk berhasil dihapus" });
   } catch (err) {
     return Response.json({ error: err.message }, { status: 500 });
   }
