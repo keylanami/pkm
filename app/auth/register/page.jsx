@@ -33,7 +33,7 @@ export default function RegisterPage() {
         password: form.password,
         username: form.email.split("@")[0],
       });
-      router.push("/");
+      router.push("/pages/dashboard");
     } catch (err) {
       alert(err.response?.data?.error || "Register gagal");
     } finally {
@@ -119,7 +119,7 @@ export default function RegisterPage() {
         </button>
 
         <p className="text-center text-sm text-slate-500 mt-6">
-            Sudah punya akun? <Link href="/login" className="text-[#1C4D8D] font-bold hover:underline">Masuk disini</Link>
+            Sudah punya akun? <Link href="/auth/login" className="text-[#1C4D8D] font-bold hover:underline">Masuk disini</Link>
         </p>
       </form>
     </AuthLayout>

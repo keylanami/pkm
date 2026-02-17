@@ -19,7 +19,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login({ email, password });
-      router.push("/");
+      router.push("/pages/dashboard");
     } catch (err) {
       alert("Login gagal: Periksa email atau password Anda.");
     } finally {
@@ -78,7 +78,7 @@ export default function LoginPage() {
         </button>
 
         <p className="text-center text-sm text-slate-500 mt-6">
-            Belum punya akun? <Link href="/register" className="text-[#1C4D8D] font-bold hover:underline">Daftar Sekarang</Link>
+            Belum punya akun? <Link href="/auth/register" className="text-[#1C4D8D] font-bold hover:underline">Daftar Sekarang</Link>
         </p>
       </form>
     </AuthLayout>
