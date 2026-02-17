@@ -1,529 +1,211 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Sidebar from "@/app/components/Sidebar/page";
+import { useState } from "react"; 
+import Link from "next/link";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
-} from "recharts";
-import {
-  PlusIcon,
-  TrashIcon,
-  BellIcon,
-  CalendarIcon,
-  ArrowTrendingUpIcon,
-  ArrowTrendingDownIcon,
-  BanknotesIcon,
-  ClockIcon,
-  CheckCircleIcon,
-  XCircleIcon,
+  ArrowRightIcon,
+  ChartBarIcon,
+  CpuChipIcon,
+  CurrencyDollarIcon,
+  Bars3Icon,
+  XMarkIcon, 
 } from "@heroicons/react/24/outline";
-import {
-  createReminder,
-  deleteReminder,
-  updateReminder,
-} from "@/services/reminder/route";
 
-const formatRupiah = (number) => {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-  }).format(number);
-};
-
-const EXPENSE_COLORS = ["#ef4444", "#f59e0b", "#3b82f6", "#10b981", "#6366f1"];
-
-export default function DashboardPage() {
-  const [loading, setLoading] = useState(true);
-  const [periode, setPeriode] = useState(new Date().toISOString().slice(0, 7));
-
-  const [data, setData] = useState({
-    summary: { totalPenjualan: 0, totalPengeluaran: 0, labaBersih: 0 },
-    chartData: [],
-    expenseChartData: [],
-    topProducts: [],
-    reminders: [],
-  });
-
-  const [showReminderForm, setShowReminderForm] = useState(false);
-  const [newReminder, setNewReminder] = useState({
-    judul: "",
-    nominal: "",
-    tanggal_jatuh_tempo: "",
-    jam: "",
-  });
-
-  useEffect(() => {
-    if (!periode) return;
-    fetchDashboardData();
-    if ("Notification" in window && Notification.permission !== "granted") {
-      Notification.requestPermission();
-    }
-  }, [periode]);
-
-  async function fetchDashboardData() {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/dashboard?periode=${periode}`);
-      if (res.ok) setData(await res.json());
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  const handleAddReminder = async (e) => {
-    e.preventDefault();
-    try {
-      await createReminder({
-        ...newReminder,
-        nominal: Number(newReminder.nominal),
-        tanggal_jatuh_tempo: Number(newReminder.tanggal_jatuh_tempo),
-        is_active: true,
-      });
-      setShowReminderForm(false);
-      setNewReminder({
-        judul: "",
-        nominal: "",
-        tanggal_jatuh_tempo: "",
-        jam: "",
-      });
-      fetchDashboardData();
-    } catch (error) {
-      alert(error.message);
-    }
-  };
-
-  const handleToggleStatus = async (id, currentStatus) => {
-    try {
-      const updated = data.reminders.map((r) =>
-        r._id === id ? { ...r, is_active: !currentStatus } : r,
-      );
-      setData({ ...data, reminders: updated });
-      await updateReminder(id, { is_active: !currentStatus });
-    } catch (error) {
-      alert("Gagal update");
-      fetchDashboardData();
-    }
-  };
-
-  const handleDeleteReminder = async (id) => {
-    if (!confirm("Hapus?")) return;
-    try {
-      await deleteReminder(id);
-      fetchDashboardData();
-    } catch (error) {
-      alert(error.message);
-    }
-  };
+export default function LandingPage() {
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#F3F6FA] font-sans flex">
-      <main
-        className={`flex-1 transition-all duration-300 ease-in-out p-6 md:p-8 
-        `}
-      >
-        <div className="max-w-7xl mx-auto space-y-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-[#1C4D8D]">Dashboard</h1>
-              <p className="text-slate-500 mt-1 flex items-center gap-2 text-sm">
-                <CalendarIcon className="w-4 h-4" /> Ringkasan Bisnis Periode{" "}
-                {periode}
-              </p>
+    <div className="min-h-screen font-sans text-[#EEEEEE] selection:bg-yellow-400 selection:text-slate-900 overflow-x-hidden">
+      
+      <div className="fixed inset-0 z-[-1] bg-gradient-to-b from-[#1C4D8D] via-[#265996] to-[#A5C0DD]"></div>
+
+      <nav className={`fixed w-full z-50 top-0 left-0 transition-all duration-300 border-b border-white/10 ${isOpen ? 'bg-[#1C4D8D]' : 'bg-[#1C4D8D]/80 backdrop-blur-md'}`}>
+        <div className="max-w-7xl mx-auto px-6 py-5">
+          <div className="flex justify-between items-center">
+            <div className="text-2xl font-black tracking-tight text-white flex items-center gap-2 cursor-pointer">
+              Cuanly
             </div>
 
-            <div className="bg-white/60 backdrop-blur-md border border-white/50 p-1.5 rounded-xl shadow-sm flex items-center gap-2">
-              <span className="text-xs font-bold text-slate-500 pl-3 uppercase tracking-wider">
-                Periode
-              </span>
-              <input
-                type="month"
-                value={periode}
-                onChange={(e) => setPeriode(e.target.value)}
-                className="text-sm bg-transparent border-none focus:ring-0 text-slate-700 font-bold cursor-pointer"
-              />
+            <div className="hidden md:flex items-center gap-8 text-sm font-medium text-blue-100">
+              {['Beranda', 'Fitur', 'Tentang'].map((item) => (
+                <Link key={item} href={`#${item.toLowerCase()}`} className="hover:text-white hover:underline decoration-yellow-400 underline-offset-4 transition-all">
+                  {item}
+                </Link>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-4">
+              <Link href="/auth/login" className="hidden md:block px-6 py-2.5 bg-[#FCD34D] text-[#1F2A44] rounded-full text-sm font-bold hover:bg-[#F59E0B] hover:shadow-[0_0_20px_rgba(252,211,77,0.4)] transition-all transform hover:-translate-y-0.5">
+                Masuk
+              </Link>
+              
+              <button 
+                onClick={() => setIsOpen(!isOpen)} 
+                className="md:hidden p-2 text-white hover:bg-white/10 rounded-lg transition-colors"
+              >
+                {isOpen ? (
+                  <XMarkIcon className="w-6 h-6" />
+                ) : (
+                  <Bars3Icon className="w-6 h-6"/>
+                )}
+              </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <GlassCard
-              title="Saldo Kas / Laba"
-              value={data.summary.labaBersih}
-              icon={<BanknotesIcon className="w-6 h-6" />}
-              trend="+3.1%"
-              type="primary"
-              loading={loading}
-            />
-            <GlassCard
-              title="Total Pemasukan"
-              value={data.summary.totalPenjualan}
-              icon={<ArrowTrendingUpIcon className="w-6 h-6" />}
-              trend="+9.0%"
-              type="success"
-              loading={loading}
-            />
-            <GlassCard
-              title="Total Pengeluaran"
-              value={data.summary.totalPengeluaran}
-              icon={<ArrowTrendingDownIcon className="w-6 h-6" />}
-              trend="-5.4%"
-              type="danger"
-              loading={loading}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 bg-white/70 backdrop-blur-xl border border-white/60 p-6 rounded-3xl shadow-sm">
-              <h3 className="text-lg font-bold text-slate-800 mb-6">
-                Analitik Penjualan
-              </h3>
-              <div className="h-80 w-full">
-                {!loading && data.chartData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={data.chartData}>
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        vertical={false}
-                        stroke="#e2e8f0"
-                      />
-                      <XAxis
-                        dataKey="tanggal"
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fill: "#64748b", fontSize: 12 }}
-                        dy={10}
-                      />
-                      <YAxis
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fill: "#64748b", fontSize: 12 }}
-                        tickFormatter={(v) => `${v / 1000}k`}
-                      />
-                      <Tooltip
-                        cursor={{ fill: "#f1f5f9" }}
-                        content={<CustomTooltip />}
-                      />
-                      <Bar
-                        dataKey="total"
-                        fill="url(#colorGradient)"
-                        radius={[6, 6, 0, 0]}
-                        barSize={36}
-                      />
-                      <defs>
-                        <linearGradient
-                          id="colorGradient"
-                          x1="0"
-                          y1="0"
-                          x2="0"
-                          y2="1"
-                        >
-                          <stop
-                            offset="0%"
-                            stopColor="#1C4D8D"
-                            stopOpacity={0.9}
-                          />
-                          <stop
-                            offset="100%"
-                            stopColor="#3164A6"
-                            stopOpacity={0.6}
-                          />
-                        </linearGradient>
-                      </defs>
-                    </BarChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="h-full flex items-center justify-center text-slate-400 italic">
-                    No Data
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="bg-white/70 backdrop-blur-xl border border-white/60 p-6 rounded-3xl shadow-sm flex flex-col">
-              <h3 className="text-lg font-bold text-slate-800 mb-2">
-                Pos Pengeluaran
-              </h3>
-              <div className="flex-1 min-h-[250px] relative">
-                {!loading && data.expenseChartData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={data.expenseChartData}
-                        innerRadius={60}
-                        outerRadius={80}
-                        paddingAngle={5}
-                        dataKey="value"
-                      >
-                        {data.expenseChartData.map((entry, index) => (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={EXPENSE_COLORS[index % EXPENSE_COLORS.length]}
-                            stroke="none"
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip formatter={(value) => formatRupiah(value)} />
-                      <Legend
-                        iconType="circle"
-                        wrapperStyle={{ fontSize: "11px", fontWeight: 600 }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="h-full flex items-center justify-center text-slate-400 italic">
-                    No Data
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="bg-white/70 backdrop-blur-xl border border-white/60 p-6 rounded-3xl shadow-sm h-fit">
-              <h3 className="text-lg font-bold text-slate-800 mb-4">
-                Top Produk
-              </h3>
-              <div className="space-y-3">
-                {data.topProducts.map((p, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between p-3 bg-white/50 rounded-xl border border-white/60 hover:bg-white transition-all"
+          {isOpen && (
+            <div className="md:hidden pt-6 pb-8 animate-fade-in-down">
+              <div className="flex flex-col space-y-4">
+                {['Beranda', 'Fitur', 'Tentang'].map((item) => (
+                  <Link 
+                    key={item} 
+                    href={`#${item.toLowerCase()}`} 
+                    onClick={() => setIsOpen(false)} 
+                    className="text-lg font-medium text-blue-100 hover:text-white hover:pl-2 transition-all border-b border-white/5 pb-2"
                   >
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={`w-6 h-6 flex items-center justify-center rounded-full text-[10px] font-bold 
-                        ${idx === 0 ? "bg-yellow-100 text-yellow-700" : "bg-slate-200 text-slate-600"}`}
-                      >
-                        {idx + 1}
-                      </span>
-                      <div>
-                        <p className="text-sm font-bold text-slate-700">
-                          {p.nama}
-                        </p>
-                        <p className="text-[10px] text-slate-500">
-                          {p.qty} terjual
-                        </p>
-                      </div>
-                    </div>
-                    <p className="text-xs font-bold text-[#1C4D8D]">
-                      {formatRupiah(p.omzet)}
-                    </p>
-                  </div>
+                    {item}
+                  </Link>
                 ))}
-                {data.topProducts.length === 0 && (
-                  <p className="text-center text-slate-400 text-sm py-4">
-                    Belum ada penjualan
-                  </p>
-                )}
+                <Link 
+                  href="/auth/login" 
+                  onClick={() => setIsOpen(false)}
+                  className="mt-4 w-full text-center px-6 py-3 bg-[#FCD34D] text-[#1F2A44] rounded-xl text-lg font-bold hover:bg-[#F59E0B] shadow-lg transition-all"
+                >
+                  Masuk Sekarang
+                </Link>
               </div>
             </div>
+          )}
+        </div>
+      </nav>
 
-            <div className="lg:col-span-2 bg-white/70 backdrop-blur-xl border border-white/60 p-6 rounded-3xl shadow-sm">
-              <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 bg-amber-100 rounded-lg text-amber-600">
-                    <BellIcon className="w-5 h-5" />
-                  </div>
-                  <h3 className="text-lg font-bold text-slate-800">
-                    Reminder Tagihan
-                  </h3>
-                </div>
-                <button
-                  onClick={() => setShowReminderForm(!showReminderForm)}
-                  className="text-xs font-bold bg-[#1C4D8D] text-white px-4 py-2 rounded-lg hover:bg-[#163E72] transition-all shadow-md shadow-blue-200"
-                >
-                  + Tambah
-                </button>
-              </div>
+      <section id="beranda" className="relative pt-40 pb-20 px-6">
+        <div className="max-w-5xl mx-auto text-center space-y-8">
+          <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-[1.15]">
+            Kelola Keuangan Bisnis Mudah, <br />
+            Cepat, dan Tepat dengan <span className="text-[#81A4FF]">Bantuan AI</span>
+          </h1>
+          
+          <p className="text-lg md:text-xl text-blue-100/90 max-w-2xl mx-auto leading-relaxed font-medium">
+            Laporan keuangan yang baik menciptakan peluang bisnis lebih besar 
+            dan raih keuntungan yang akurat secara real-time.
+          </p>
 
-              {showReminderForm && (
-                <form
-                  onSubmit={handleAddReminder}
-                  className="mb-6 p-4 bg-slate-50/80 rounded-2xl border border-dashed border-slate-300 grid grid-cols-1 md:grid-cols-5 gap-3"
-                >
-                  <input
-                    type="text"
-                    placeholder="Judul"
-                    required
-                    value={newReminder.judul}
-                    onChange={(e) =>
-                      setNewReminder({ ...newReminder, judul: e.target.value })
-                    }
-                    className="text-sm rounded-lg border-slate-200 bg-white"
-                  />
-                  <input
-                    type="number"
-                    placeholder="Nominal"
-                    required
-                    value={newReminder.nominal}
-                    onChange={(e) =>
-                      setNewReminder({
-                        ...newReminder,
-                        nominal: e.target.value,
-                      })
-                    }
-                    className="text-sm rounded-lg border-slate-200 bg-white"
-                  />
-                  <input
-                    type="number"
-                    placeholder="Tgl (1-31)"
-                    min="1"
-                    max="31"
-                    required
-                    value={newReminder.tanggal_jatuh_tempo}
-                    onChange={(e) =>
-                      setNewReminder({
-                        ...newReminder,
-                        tanggal_jatuh_tempo: e.target.value,
-                      })
-                    }
-                    className="text-sm rounded-lg border-slate-200 bg-white"
-                  />
-                  <input
-                    type="time"
-                    required
-                    value={newReminder.jam}
-                    onChange={(e) =>
-                      setNewReminder({ ...newReminder, jam: e.target.value })
-                    }
-                    className="text-sm rounded-lg border-slate-200 bg-white"
-                  />
-                  <button
-                    type="submit"
-                    className="bg-emerald-500 text-white rounded-lg text-xs font-bold hover:bg-emerald-600"
-                  >
-                    Simpan
-                  </button>
-                </form>
-              )}
+          <div className="mt-16 w-full aspect-[2/1] md:aspect-[2.5/1] rounded-[2rem] overflow-hidden shadow-2xl border border-white/20 relative group">
+             <div className="absolute inset-0 bg-gradient-to-r from-[#FBCFE8] via-[#FEF3C7] to-[#10B981] opacity-90 transition-all duration-1000 group-hover:scale-105"></div>
+           
+             <div className="absolute inset-0 opacity-20 mix-blend-overlay" style={{backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`}}></div>
+         
+             <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none"></div>
+          </div>
+        </div>
+      </section>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {data.reminders.map((rem) => {
-                  const isNear =
-                    rem.tanggal_jatuh_tempo <= new Date().getDate() + 3 &&
-                    rem.tanggal_jatuh_tempo >= new Date().getDate();
-                  const isActive = rem.is_active;
-                  return (
-                    <div
-                      key={rem._id}
-                      className={`flex items-center justify-between p-4 rounded-2xl border backdrop-blur-sm transition-all
-                      ${
-                        !isActive
-                          ? "bg-slate-100/50 border-slate-200 opacity-50"
-                          : isNear
-                            ? "bg-amber-50/80 border-amber-200 shadow-sm"
-                            : "bg-white/60 border-slate-100"
-                      }`}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div
-                          className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl border ${isNear ? "bg-white text-amber-600 border-amber-100" : "bg-slate-50 text-slate-500 border-slate-200"}`}
-                        >
-                          <span className="text-[10px] font-bold uppercase">
-                            Tgl
-                          </span>
-                          <span className="text-lg font-black leading-none">
-                            {rem.tanggal_jatuh_tempo}
-                          </span>
-                        </div>
-                        <div>
-                          <p
-                            className={`text-sm font-bold ${!isActive && "line-through"}`}
-                          >
-                            {rem.judul}
-                          </p>
-                          <p className="text-xs font-mono text-slate-500">
-                            {formatRupiah(rem.nominal)}
-                          </p>
-                          <div className="flex items-center gap-1 mt-1 text-[10px] text-slate-400 font-semibold bg-slate-100 px-1.5 py-0.5 rounded-md w-fit">
-                            <ClockIcon className="w-3 h-3" /> {rem.jam}
-                          </div>
-                        </div>
-                      </div>
+      <section id="fitur" className="py-24 px-6 md:px-16 max-w-[1440px] mx-auto">
+        <div className="flex flex-col lg:flex-row items-start justify-center gap-16 lg:gap-24">
+          
+          <div className="lg:w-[548px] lg:sticky lg:top-32 space-y-6">
+            <h2 className="text-[36px] md:text-[42px] font-bold leading-[120%] tracking-tight text-[#EEEEEE]">
+              Sesuai dengan kebutuhan <br/> 
+              <span className="text-blue-200">pengelolaan keuangan</span> <br/>
+              bisnismu
+            </h2>
+            <p className="text-[16px] md:text-[18px] font-medium leading-[145%] text-[#EEEEEE]/90">
+              Mulai kelola keuangan bisnis Anda dengan fitur unggulan dari kami yang dirancang spesifik untuk akselerasi pertumbuhan UMKM.
+            </p>
+            <div className="w-24 h-1.5 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full mt-4"></div>
+          </div>
 
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() =>
-                            handleToggleStatus(rem._id, rem.is_active)
-                          }
-                          className={`p-1.5 rounded-full ${isActive ? "bg-emerald-100 text-emerald-600" : "bg-slate-200 text-slate-500"}`}
-                        >
-                          {isActive ? (
-                            <CheckCircleIcon className="w-5 h-5" />
-                          ) : (
-                            <XCircleIcon className="w-5 h-5" />
-                          )}
-                        </button>
-                        <button
-                          onClick={() => handleDeleteReminder(rem._id)}
-                          className="p-1.5 rounded-full bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600"
-                        >
-                          <TrashIcon className="w-5 h-5" />
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+          <div className="flex flex-col gap-[15px] w-full lg:w-[540px]">
+            <FeatureCard 
+              title="Perencanaan Bisnis dari Nol"
+              desc="Bantu pengguna merancang kebutuhan bisnis sejak awal, mulai dari penentuan jenis usaha, aset, hingga kebutuhan biaya produksi."
+              icon={<ChartBarIcon className="w-6 h-6 text-[#1F2A44] z-10 relative"/>}
+              shape="circle"
+            />
+            <FeatureCard 
+              title="Perhitungan Keuangan Otomatis"
+              desc="Bantu pengguna hitung kebutuhan biaya produksi, Harga Pokok Produksi (HPP), hingga menentukan harga jual secara mudah dan terstruktur."
+              icon={<CpuChipIcon className="w-6 h-6 text-[#1F2A44] z-10 relative"/>}
+              shape="diamond"
+            />
+            <FeatureCard 
+              title="Balik Modal Lebih Terukur"
+              desc="Membantu pengguna mencapai target balik modal melalui analisis perencanaan keuangan yang matang dan berbasis data."
+              icon={<CurrencyDollarIcon className="w-6 h-6 text-[#1F2A44] z-10 relative"/>}
+              shape="rectangle"
+            />
+          </div>
+        </div>
+      </section>
+
+      <footer className="relative pt-32 pb-16 px-6 overflow-hidden">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="flex flex-col items-center text-center space-y-12 mb-20">
+            <h2 className="text-3xl md:text-5xl font-bold leading-tight max-w-3xl">
+              Mulai kelola perencanaan keuangan <br/> bisnis Anda sekarang!
+            </h2>
+            
+            <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+               <div className="space-y-2 p-6 rounded-2xl hover:bg-white/5 transition-colors">
+                  <h4 className="font-bold text-xl">Gratis Selamanya</h4>
+                  <p className="text-sm opacity-80">Untuk fitur dasar tanpa kartu kredit.</p>
+               </div>
+               <div className="space-y-2 p-6 rounded-2xl hover:bg-white/5 transition-colors">
+                  <h4 className="font-bold text-xl">Enkripsi Bank</h4>
+                  <p className="text-sm opacity-80">Keamanan data prioritas utama kami.</p>
+               </div>
+               <div className="space-y-2 p-6 rounded-2xl hover:bg-white/5 transition-colors">
+                  <h4 className="font-bold text-xl">Support 24/7</h4>
+                  <p className="text-sm opacity-80">Tim kami siap membantu kapanpun.</p>
+               </div>
+            </div>
+
+            <button className="px-10 py-4 bg-[#1F2A44] text-white rounded-full text-lg font-bold shadow-2xl hover:shadow-[#1F2A44]/50 hover:scale-105 transition-all ring-4 ring-[#1F2A44]/20">
+              Bergabung Sekarang
+            </button>
+          </div>
+
+          <div className="border-t border-white/20 pt-8 flex flex-col md:flex-row justify-between items-center text-sm font-medium text-blue-100/60">
+            <div className="flex items-center gap-2 mb-4 md:mb-0 text-white">
+               <div className="w-6 h-6 bg-white/20 rounded-full animate-pulse"></div>
+               <span className="font-bold">Cuanly</span>
+            </div>
+            <div className="flex gap-8">
+                <a href="#" className="hover:text-white transition-colors">Features</a>
+                <a href="#" className="hover:text-white transition-colors">Learn more</a>
+                <a href="#" className="hover:text-white transition-colors">Support</a>
+            </div>
+            <div className="hidden md:flex gap-4">
+               {[1,2,3].map(i => <div key={i} className="w-5 h-5 bg-white/20 rounded hover:bg-white cursor-pointer transition-colors"></div>)}
             </div>
           </div>
         </div>
-      </main>
+      </footer>
     </div>
   );
 }
 
-function GlassCard({ title, value, icon, trend, type, loading }) {
-  const styles = {
-    primary: "from-[#E3F2FD] to-[#BBDEFB] border-[#90CAF9] text-[#1565C0]", 
-    success: "from-[#E8F5E9] to-[#C8E6C9] border-[#A5D6A7] text-[#2E7D32]", 
-    danger: "from-[#FFEBEE] to-[#FFCDD2] border-[#EF9A9A] text-[#C62828]", 
+function FeatureCard({ title, desc, icon, shape }) {
+  const shapeStyles = {
+    circle: "rounded-full",
+    diamond: "rotate-45 rounded-sm",
+    rectangle: "rounded-sm h-full"
   };
 
   return (
-    <div
-      className={`p-6 rounded-3xl bg-gradient-to-br ${styles[type]} border shadow-sm relative overflow-hidden group`}
-    >
-      <div className="absolute -right-4 -top-4 opacity-10 scale-150 transform group-hover:scale-125 transition-transform duration-500">
-        {icon}
-      </div>
-      <div className="relative z-10">
-        <p className="text-xs font-bold uppercase tracking-wider opacity-70 mb-1">
-          {title}
-        </p>
-        <h3 className="text-3xl font-black tracking-tight">
-          {loading ? "..." : formatRupiah(value)}
-        </h3>
-        <div className="mt-2 inline-flex items-center px-2 py-0.5 rounded-md bg-white/40 border border-white/50 text-[10px] font-bold">
-          {trend} dr bulan lalu
+    <div className="group box-border flex flex-col items-start p-6 gap-4 w-full bg-[#F6F8FC] border-2 border-[#D8E5FF] shadow-[2px_4px_4px_rgba(0,0,0,0.05)] rounded-[16px] hover:border-[#6C63FF]/50 transition-all hover:-translate-y-1 hover:shadow-xl">
+      <div className="flex flex-row items-center gap-3 w-full">
+        <div className="relative w-6 h-6 flex items-center justify-center">
+           <div className={`absolute w-[18px] h-[18px] bg-[rgba(108,99,255,0.5)] ${shapeStyles[shape]}`}></div>
+           {icon}
         </div>
+        <h3 className="font-semibold text-[20px] md:text-[24px] leading-none tracking-tight text-[#1F2A44] group-hover:text-[#6C63FF] transition-colors">
+          {title}
+        </h3>
       </div>
+      <p className="font-medium text-[16px] md:text-[18px] leading-[145%] tracking-[-0.005em] text-[#6B7280]">
+        {desc}
+      </p>
     </div>
   );
 }
-
-const CustomTooltip = ({ active, payload, label }) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-white/90 backdrop-blur-md p-3 border border-white/50 shadow-xl rounded-xl text-xs">
-        <p className="font-bold text-slate-500 mb-1 uppercase tracking-tighter">
-          Tanggal {label}
-        </p>
-        <p className="text-[#1C4D8D] font-black text-sm">
-          {formatRupiah(payload[0].value)}
-        </p>
-      </div>
-    );
-  }
-  return null;
-};
